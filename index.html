@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Until Bhupesh Becomes Rich</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #000000;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.5);
+            --text-tertiary: rgba(255, 255, 255, 0.3);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --glow-color: rgba(255, 255, 255, 0.1);
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Ambient background glow */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, rgba(255,255,255,0.015) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+            animation: fadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .title {
+            font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+            font-weight: 300;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            animation: fadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        .timer {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: clamp(0.8rem, 3vw, 2rem);
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .time-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Flip Card Container */
+        .flip-card {
+            position: relative;
+            width: clamp(80px, 20vw, 180px);
+            height: clamp(100px, 25vw, 220px);
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* The digit display */
+        .digit-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: clamp(8px, 2vw, 16px);
+            overflow: hidden;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        /* Center line */
+        .digit-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .digit-container::after {
+            content: '';
+            position: absolute;
+            top: calc(50% + 1px);
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        /* Top and bottom halves */
+        .digit-top, .digit-bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            backface-visibility: hidden;
+        }
+
+        .digit-top {
+            top: 0;
+            align-items: flex-end;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.02), transparent);
+        }
+
+        .digit-bottom {
+            bottom: 0;
+            align-items: flex-start;
+            background: linear-gradient(to top, rgba(255,255,255,0.02), transparent);
+        }
+
+        .digit-top span, .digit-bottom span {
+            font-size: clamp(3.5rem, 12vw, 10rem);
+            font-weight: 200;
+            line-height: 0;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            transform: translateY(50%);
+        }
+
+        .digit-bottom span {
+            transform: translateY(-50%);
+        }
+
+        /* Flip animation overlay */
+        .flip-top, .flip-bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            backface-visibility: hidden;
+            transform-origin: bottom center;
+        }
+
+        .flip-top {
+            top: 0;
+            align-items: flex-end;
+            background: linear-gradient(to bottom, rgba(30,30,30,1), rgba(20,20,20,1));
+            border-radius: clamp(8px, 2vw, 16px) clamp(8px, 2vw, 16px) 0 0;
+            transform-origin: bottom center;
+            z-index: 20;
+        }
+
+        .flip-bottom {
+            bottom: 0;
+            align-items: flex-start;
+            background: linear-gradient(to top, rgba(30,30,30,1), rgba(20,20,20,1));
+            border-radius: 0 0 clamp(8px, 2vw, 16px) clamp(8px, 2vw, 16px);
+            transform-origin: top center;
+            z-index: 20;
+        }
+
+        .flip-top span, .flip-bottom span {
+            font-size: clamp(3.5rem, 12vw, 10rem);
+            font-weight: 200;
+            line-height: 0;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .flip-top span {
+            transform: translateY(50%);
+        }
+
+        .flip-bottom span {
+            transform: translateY(-50%);
+        }
+
+        /* Animation keyframes */
+        @keyframes flipTop {
+            0% {
+                transform: rotateX(0deg);
+            }
+            100% {
+                transform: rotateX(-90deg);
+            }
+        }
+
+        @keyframes flipBottom {
+            0% {
+                transform: rotateX(90deg);
+            }
+            100% {
+                transform: rotateX(0deg);
+            }
+        }
+
+        .flip-top.animate {
+            animation: flipTop 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .flip-bottom.animate {
+            animation: flipBottom 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s forwards;
+        }
+
+        /* Glow effect on change */
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 
+                    0 20px 60px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                    0 0 30px rgba(255, 255, 255, 0);
+            }
+            50% {
+                box-shadow: 
+                    0 20px 60px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                    0 0 40px rgba(255, 255, 255, 0.08);
+            }
+            100% {
+                box-shadow: 
+                    0 20px 60px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                    0 0 30px rgba(255, 255, 255, 0);
+            }
+        }
+
+        .digit-container.glow {
+            animation: glowPulse 0.6s ease-out;
+        }
+
+        .time-label {
+            font-size: clamp(0.6rem, 1.5vw, 0.85rem);
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-top: 1.2rem;
+        }
+
+        .separator {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 100;
+            color: var(--text-tertiary);
+            align-self: center;
+            opacity: 0.3;
+            margin-top: -1rem;
+        }
+
+        /* Pulse animation for separators */
+        @keyframes separatorPulse {
+            0%, 100% { 
+                opacity: 0.2;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.5;
+                transform: scale(1.1);
+            }
+        }
+
+        .separator {
+            animation: separatorPulse 1s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: clamp(0.75rem, 1.8vw, 1.1rem);
+            font-weight: 300;
+            color: var(--text-tertiary);
+            letter-spacing: 0.1em;
+            animation: fadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+        }
+
+        .started {
+            position: absolute;
+            bottom: 2rem;
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+        }
+
+        /* Staggered entrance animation */
+        .time-block:nth-child(1) { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+        .time-block:nth-child(2) { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+        .time-block:nth-child(3) { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+        .time-block:nth-child(4) { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+
+        .separator:nth-of-type(1) { animation-delay: 0.15s; }
+        .separator:nth-of-type(2) { animation-delay: 0.25s; }
+        .separator:nth-of-type(3) { animation-delay: 0.35s; }
+
+        @media (max-width: 900px) {
+            .separator {
+                display: none;
+            }
+            
+            .timer {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .timer {
+                gap: 0.8rem;
+            }
+            
+            .flip-card {
+                width: 70px;
+                height: 90px;
+            }
+            
+            .digit-top span, .digit-bottom span,
+            .flip-top span, .flip-bottom span {
+                font-size: 3rem;
+            }
+            
+            .title {
+                letter-spacing: 0.2em;
+                margin-bottom: 3rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .timer {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem 1rem;
+            }
+            
+            .flip-card {
+                width: 100%;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Until Bhupesh Becomes Rich</h1>
+        
+        <div class="timer">
+            <div class="time-block">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="digit-container" id="days-container">
+                            <div class="digit-top"><span id="days-top">00</span></div>
+                            <div class="digit-bottom"><span id="days-bottom">00</span></div>
+                            <div class="flip-top" id="days-flip-top"><span>00</span></div>
+                            <div class="flip-bottom" id="days-flip-bottom"><span>00</span></div>
+                        </div>
+                    </div>
+                </div>
+                <span class="time-label">Days</span>
+            </div>
+            
+            <span class="separator">:</span>
+            
+            <div class="time-block">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="digit-container" id="hours-container">
+                            <div class="digit-top"><span id="hours-top">00</span></div>
+                            <div class="digit-bottom"><span id="hours-bottom">00</span></div>
+                            <div class="flip-top" id="hours-flip-top"><span>00</span></div>
+                            <div class="flip-bottom" id="hours-flip-bottom"><span>00</span></div>
+                        </div>
+                    </div>
+                </div>
+                <span class="time-label">Hours</span>
+            </div>
+            
+            <span class="separator">:</span>
+            
+            <div class="time-block">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="digit-container" id="minutes-container">
+                            <div class="digit-top"><span id="minutes-top">00</span></div>
+                            <div class="digit-bottom"><span id="minutes-bottom">00</span></div>
+                            <div class="flip-top" id="minutes-flip-top"><span>00</span></div>
+                            <div class="flip-bottom" id="minutes-flip-bottom"><span>00</span></div>
+                        </div>
+                    </div>
+                </div>
+                <span class="time-label">Minutes</span>
+            </div>
+            
+            <span class="separator">:</span>
+            
+            <div class="time-block">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="digit-container" id="seconds-container">
+                            <div class="digit-top"><span id="seconds-top">00</span></div>
+                            <div class="digit-bottom"><span id="seconds-bottom">00</span></div>
+                            <div class="flip-top" id="seconds-flip-top"><span>00</span></div>
+                            <div class="flip-bottom" id="seconds-flip-bottom"><span>00</span></div>
+                        </div>
+                    </div>
+                </div>
+                <span class="time-label">Seconds</span>
+            </div>
+        </div>
+        
+        <p class="subtitle">The journey continues...</p>
+    </div>
+    
+    <p class="started">Started January 5, 2026</p>
+
+    <script>
+        // FIXED START DATE - This is when the timer begins
+        const START_DATE = new Date('2026-01-05T00:00:00Z');
+
+        // Store previous values to detect changes
+        let prevValues = {
+            days: null,
+            hours: null,
+            minutes: null,
+            seconds: null
+        };
+
+        function flipTo(unit, newValue) {
+            const container = document.getElementById(`${unit}-container`);
+            const topDigit = document.getElementById(`${unit}-top`);
+            const bottomDigit = document.getElementById(`${unit}-bottom`);
+            const flipTop = document.getElementById(`${unit}-flip-top`);
+            const flipBottom = document.getElementById(`${unit}-flip-bottom`);
+            
+            const formattedValue = newValue.toString().padStart(2, '0');
+            const currentValue = topDigit.textContent;
+            
+            if (currentValue === formattedValue) return;
+            
+            // Set up the flip animation
+            flipTop.querySelector('span').textContent = currentValue;
+            flipBottom.querySelector('span').textContent = formattedValue;
+            
+            // Reset animations
+            flipTop.classList.remove('animate');
+            flipBottom.classList.remove('animate');
+            flipTop.style.display = 'flex';
+            flipBottom.style.display = 'flex';
+            flipTop.style.transform = 'rotateX(0deg)';
+            flipBottom.style.transform = 'rotateX(90deg)';
+            
+            // Add glow effect
+            container.classList.remove('glow');
+            void container.offsetWidth; // Trigger reflow
+            container.classList.add('glow');
+            
+            // Trigger animations
+            requestAnimationFrame(() => {
+                flipTop.classList.add('animate');
+                flipBottom.classList.add('animate');
+            });
+            
+            // Update the static digits after animation
+            setTimeout(() => {
+                topDigit.textContent = formattedValue;
+                bottomDigit.textContent = formattedValue;
+            }, 150);
+            
+            // Hide flip elements after animation completes
+            setTimeout(() => {
+                flipTop.style.display = 'none';
+                flipBottom.style.display = 'none';
+            }, 500);
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const elapsed = now - START_DATE;
+
+            // Calculate time components
+            const seconds = Math.floor((elapsed / 1000) % 60);
+            const minutes = Math.floor((elapsed / (1000 * 60)) % 60);
+            const hours = Math.floor((elapsed / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+
+            // Only animate if value changed
+            if (prevValues.seconds !== seconds) {
+                flipTo('seconds', seconds);
+                prevValues.seconds = seconds;
+            }
+            if (prevValues.minutes !== minutes) {
+                flipTo('minutes', minutes);
+                prevValues.minutes = minutes;
+            }
+            if (prevValues.hours !== hours) {
+                flipTo('hours', hours);
+                prevValues.hours = hours;
+            }
+            if (prevValues.days !== days) {
+                flipTo('days', days);
+                prevValues.days = days;
+            }
+        }
+
+        // Initialize display
+        function initDisplay() {
+            const now = new Date();
+            const elapsed = now - START_DATE;
+            
+            const seconds = Math.floor((elapsed / 1000) % 60);
+            const minutes = Math.floor((elapsed / (1000 * 60)) % 60);
+            const hours = Math.floor((elapsed / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            
+            ['days', 'hours', 'minutes', 'seconds'].forEach(unit => {
+                const value = eval(unit).toString().padStart(2, '0');
+                document.getElementById(`${unit}-top`).textContent = value;
+                document.getElementById(`${unit}-bottom`).textContent = value;
+                document.getElementById(`${unit}-flip-top`).style.display = 'none';
+                document.getElementById(`${unit}-flip-bottom`).style.display = 'none';
+            });
+            
+            prevValues = { days, hours, minutes, seconds };
+        }
+
+        // Initialize and start
+        initDisplay();
+        setInterval(updateTimer, 1000);
+
+        // Subtle parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 8;
+            const y = (e.clientY / window.innerHeight - 0.5) * 8;
+            
+            document.querySelector('.container').style.transform = 
+                `perspective(1000px) rotateY(${x * 0.2}deg) rotateX(${-y * 0.2}deg)`;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            document.querySelector('.container').style.transform = 'none';
+        });
+    </script>
+</body>
+</html>
